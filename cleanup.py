@@ -18,7 +18,7 @@ def get_word_list(file_name):
 
     # removes punctuation from text and sets all ensures all characters are lower case
     translator = str.maketrans('', '', string.punctuation)
-    # text = text.lower()
+    text = text.lower()
     words = (text.translate(translator)).split()
     return words
 

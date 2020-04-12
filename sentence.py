@@ -74,8 +74,7 @@ def pickle_ds(corpus_file='./lyrics', filename = "masterdict.pkl"):
     elif corpus_file is not None:
         print ("Creating new dictionary")
         word_list = iterate_files(corpus_file)
-        histogram = Dictogram(word_list)
-        master_dict = dict_of_hists(histogram, word_list)
+        master_dict = dict_of_tuple_dicts(word_list)
         with open(filename, 'wb') as handle:
             pickle.dump(master_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
         with open('word_list.pkl', 'wb') as f:
@@ -85,15 +84,14 @@ def pickle_ds(corpus_file='./lyrics', filename = "masterdict.pkl"):
 if __name__ == '__main__':
   # if len(sys.argv) == 2:
   #     # use corpus file as sys.argv if
-  #     master_dict = pickle_ds(sys.argv[1])
+  #     word_list, master_dict = pickle_ds(sys.argv[1])
   # else:
   #     # testing purposes
-  text = 'one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish'
-  word_list = text.split()
-  master_dict = dict_of_tuple_dicts(word_list)
-  print(master_dict)
-  # print(master_dict.get('one'))
-  print('here')
+  # text = 'one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish'
+  # word_list = text.split()
+  # master_dict = dict_of_tuple_dicts(word_list)
+  # word_list, master_dict = pickle_ds()
+  word_list, master_dict = pickle_ds(sys.argv[1])
   print(construct_phrase(word_list, master_dict))
 
 
