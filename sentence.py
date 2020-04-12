@@ -2,32 +2,55 @@ from dictogram import Dictogram
 from cleanup import get_word_list, iterate_files
 from sample import weighted_random_select
 import pickle, sys, random, os.path
+# from string import isspace
 
 def dict_of_tuple_dicts(word_list, markov_order = 2):
   """Constructs a dictionary with words from corpus as keys
   and a histogram of following words as values"""
   master_dict = {}
-  queue = []
-  for indx, word in enumerate(word_list):
-    if indx < markov_order: queue.append(word)
-    else:
-      queue.append(word)
-      word_select = queue.pop(0)
-      dict_of_tuple_entry(master_dict, word_select, tuple(queue))
+  # Token to determine start/stop of new phrase.  1 for start, 0
+  # for neutral, -1 for stop
+  token = 0
+  for line in word_list:
+    if line.isspace(): continue
+    words = line.split()
+    # print(words)
+    for indx, word in enumerate(words):
+      if indx == 0: queue = []
+      if indx < markov_order:
+        queue.append(word)
+        token = 1
+      else:
+        queue.append(word)
+        word_select = queue.pop(0)
+        if indx == len(words) - 1:
+          print('end token')
+          token = -1
+        # print(len(queue))
+        dict_of_tuple_entry(master_dict, word_select, tuple(queue), token)
+        if token == 1: token = 0
+        if indx == len(words) - 1:
+          print('break')
+          break
+
   return master_dict
 
-def dict_of_tuple_entry(master_dict, word_select, words):
+def dict_of_tuple_entry(master_dict, word_select, words, token):
   """Constructs a histogram for word_select that counts word tuples
       and is an inner dictionary of master_dict"""
   if word_select in master_dict.keys():
     freq_dict = master_dict[word_select]
     if words in freq_dict.keys():
-      freq_dict[words] += 1
+      count = freq_dict[words][0] + 1
+      # sets start/stop token to existing token if not 0, else sets to passed token
+      # Attempts to maximize posibilities for start/stop tokens
+      new_token = freq_dict[words][1] if freq_dict[words][1] != 0 else token
+      freq_dict[words] = (count, token)
     else:
-      freq_dict[words] = 1
+      freq_dict[words] = (1, token)
   else:
     master_dict[word_select] = {}
-    master_dict[word_select][words] = 1
+    master_dict[word_select][words] = (1, token)
   # return master_dict
 
 def construct_phrase(word_list, master_dict, sen_length = 10):
@@ -87,12 +110,17 @@ if __name__ == '__main__':
   #     word_list, master_dict = pickle_ds(sys.argv[1])
   # else:
   #     # testing purposes
-  # text = 'one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish one fish two fish red fish blue fish'
-  # word_list = text.split()
+  # text = "one fish two fish red fish blue fish \n \
+  #         one fish two fish red fish blue fish \n \
+  #         one fish two fish red fish blue fish \n \
+  #         one fish two fish red fish blue fish \n \
+  #         one fish two fish red fish blue fish" 
+  # word_list = text.splitlines()
   # master_dict = dict_of_tuple_dicts(word_list)
   # word_list, master_dict = pickle_ds()
   word_list, master_dict = pickle_ds(sys.argv[1])
-  print(construct_phrase(word_list, master_dict))
+  print(master_dict)
+  # print(construct_phrase(word_list, master_dict))
 
 
     # master_dict = pickle_ds()

@@ -17,10 +17,10 @@ def get_word_list(file_name):
     text =  open(file_name).read()
 
     # removes punctuation from text and sets all ensures all characters are lower case
-    translator = str.maketrans('', '', string.punctuation)
-    text = text.lower()
-    words = (text.translate(translator)).split()
-    return words
+    # translator = str.maketrans('', '', string.punctuation)
+    # text = text.lower()
+    # words = (text.translate(translator)).split()
+    return text.splitlines()
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
