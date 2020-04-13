@@ -12,8 +12,9 @@ def dict_of_tuple_dicts(word_list, markov_order = 2):
   # for neutral, -1 for stop
   token = 0
   for line in word_list:
-    if line.isspace(): continue
-    words = line.split()
+    if line.isspace() or line == []: continue
+    else:
+      words = line.split()
     # print(words)
     for indx, word in enumerate(words):
       if indx == 0: queue = []
@@ -53,19 +54,26 @@ def dict_of_tuple_entry(master_dict, word_select, words, token):
     master_dict[word_select][words] = (1, token)
   # return master_dict
 
-def construct_phrase(word_list, master_dict, sen_length = 10):
+def construct_phrase(line_list, master_dict, sen_length = 10):
   """Constructs a phrase using markov chain"""
   # Select random word from corpus to begin phrase
   sentence = []
-  word_select = word_list[random.randint(0, len(word_list) - 1)]
+  found_word = False
+  while found_word == False:
+    line_select = line_list[random.randint(0, len(line_list) - 1)].split()
+    if line_select == []: continue 
+    word_select = line_select[0]
+    found_word = True
   # Append word to start phrase construction
   sentence.append(word_select)
   for i in range(sen_length):
-    words = weighted_random_select(master_dict.get(word_select))
-    [sentence.append(word) for word in words]
-    word_select = words[len(words) - 1]
-  print(f"sentence: {(' ').join(sentence)}")
-  return (' ').join(sentence)
+      words = weighted_random_select(master_dict.get(word_select))
+      sentence.extend(list(words))
+  print(sentence)
+    # [sentence.append(word) for word in words]
+  #   word_select = words[len(words) - 1]
+  # print(f"sentence: {(' ').join(sentence)}")
+  # return (' ').join(sentence)
 # def new_words(frequency_hist):
 #   """Selects a new word, based on the frequency the word follows word_select"""
 
@@ -119,8 +127,9 @@ if __name__ == '__main__':
   # master_dict = dict_of_tuple_dicts(word_list)
   # word_list, master_dict = pickle_ds()
   word_list, master_dict = pickle_ds(sys.argv[1])
-  print(master_dict)
-  # print(construct_phrase(word_list, master_dict))
+  # print(master_dict)
+
+  construct_phrase(word_list, master_dict)
 
 
     # master_dict = pickle_ds()
