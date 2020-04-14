@@ -21,7 +21,7 @@ def weighted_random_select(dict):
     for key in dict:
         weights_sum += dict[key][0]
         if random_choice <= weights_sum:
-            return key
+            return key, dict[key][1]
 
 def frequency_test(hist, word_list):
     """Takes in the histogram, runs the weighted random selection function on it to

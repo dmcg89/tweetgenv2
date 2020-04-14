@@ -53,31 +53,32 @@ def dict_of_tuple_entry(master_dict, word_select, words, token):
     master_dict[word_select] = {}
     master_dict[word_select][words] = (1, token)
   # return master_dict
-
-def construct_phrase(line_list, master_dict, sen_length = 10):
-  """Constructs a phrase using markov chain"""
-  # Select random word from corpus to begin phrase
-  sentence = []
+def find_first_word(line_list):
   found_word = False
   while found_word == False:
     line_select = line_list[random.randint(0, len(line_list) - 1)].split()
     if line_select == []: continue 
     word_select = line_select[0]
     found_word = True
+  return word_select
+def construct_phrase(line_list, master_dict, sen_length = 10):
+  """Constructs a phrase using markov chain"""
+  # Select random word from corpus to begin phrase
+  sentence = []
+  word_select = find_first_word(line_list)
   # Append word to start phrase construction
   sentence.append(word_select)
-  for i in range(sen_length):
-      words = weighted_random_select(master_dict.get(word_select))
-      sentence.extend(list(words))
-  print(sentence)
-    # [sentence.append(word) for word in words]
-  #   word_select = words[len(words) - 1]
-  # print(f"sentence: {(' ').join(sentence)}")
-  # return (' ').join(sentence)
-# def new_words(frequency_hist):
-#   """Selects a new word, based on the frequency the word follows word_select"""
-
-#   return weighted_random_select(frequency_hist)
+  token = None
+  while token != -1:
+    if master_dict.get(word_select) == None or sentence == None:
+      sentence = []
+      word_select = find_first_word(line_list)
+      continue
+    words, token = weighted_random_select(master_dict.get(word_select))
+    print(word_select)
+    sentence.extend(list(words))
+    word_select = words[-1]
+  return sentence
 
 def dict_of_hists_entry(select_word, word_list):
     words_after_list = []
@@ -125,19 +126,8 @@ if __name__ == '__main__':
   #         one fish two fish red fish blue fish" 
   # word_list = text.splitlines()
   # master_dict = dict_of_tuple_dicts(word_list)
-  # word_list, master_dict = pickle_ds()
-  word_list, master_dict = pickle_ds(sys.argv[1])
+  word_list, master_dict = pickle_ds()
+  # word_list, master_dict = pickle_ds(sys.argv[1])
   # print(master_dict)
 
-  construct_phrase(word_list, master_dict)
-
-
-    # master_dict = pickle_ds()
-    # for _ in range(10):
-    #     sentence(master_dict[0], master_dict[1], random.randint(1,8)*2)
-    # if len(sys.argv) == 3:
-    #     sentence(word_list, master_dict, sys.argv[3])
-    # else:
-    #     sentence(word_list, master_dict)
-
-    # print(master_dict)
+  print(construct_phrase(word_list, master_dict))
