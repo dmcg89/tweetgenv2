@@ -61,6 +61,7 @@ def find_first_word(line_list):
     word_select = line_select[0]
     found_word = True
   return word_select
+
 def construct_phrase(line_list, master_dict, sen_length = 10):
   """Constructs a phrase using markov chain"""
   # Select random word from corpus to begin phrase
@@ -71,6 +72,7 @@ def construct_phrase(line_list, master_dict, sen_length = 10):
   token = None
   while token != -1:
     if master_dict.get(word_select) == None or sentence == None:
+      print('HERE')
       sentence = []
       word_select = find_first_word(line_list)
       continue

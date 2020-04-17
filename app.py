@@ -1,43 +1,29 @@
 import sys, random
 
 from flask import Flask, jsonify, render_template
+from flask_cors import CORS
 # from app import app
 
-from sentence import sentence, dict_of_hists, pickle_ds
+from sentence import construct_phrase, dict_of_hists, pickle_ds
 from dictogram import Dictogram
 from cleanup import iterate_files, get_word_list
+import json
 app = Flask(__name__, instance_relative_config=True)
+CORS(app)
 
 master_dict = pickle_ds()
 
 @app.route('/')
 @app.route('/index')
 def index():
-
-    # for _ in range(10):
-    #     sentence(master_dict[0], master_dict[1], random.randint(1,8)*2)
     song = []
     for _ in range(10):
-        # phrase = sentence(word_list, master_dict, random.randint(1,8)*2)
-        # song += ' '.join(phrase) + '\n'
-        song.append(' '.join(sentence(master_dict[0], master_dict[1], random.randint(1,8)*2)))
-    # word_file = 'text2.txt'
-    # text =  open(word_file).read()
-    # translator = str.maketrans('', '', string.punctuation)
-    # text = text.lower()
-    # words_from_text = (text.translate(translator)).split()
-    # # sorts words alphabetically
-    # words_from_text = sorted(words_from_text)
-    # hist = histogram(words_from_text)
-    # sentence = []
-    # for i in range(10):
-    #     select_word = weighted_random_select(hist, words_from_text)
-    #     sentence.append(select_word)
-    # print(sentence)
-    # words = " ".join(sentence)
-    # print(song)
+        song.append(' '.join(construct_phrase(master_dict[0], master_dict[1], random.randint(1,8)*2)))
+    # my_json_string = json.dumps(song)
 
-    return render_template("base.html", title='Home Page',words=song)
+    # return render_template("base.html", title='Home Page',words=song)
+    return json.dumps(song)
+    # return song
 
 
 # if __name__ == '__main__':
