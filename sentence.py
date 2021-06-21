@@ -2,6 +2,7 @@ from dictogram import Dictogram
 from cleanup import get_word_list, iterate_files
 from sample import weighted_random_select
 import pickle, sys, random, os.path
+import json
 # from string import isspace
 
 def dict_of_tuple_dicts(word_list, markov_order = 2):
@@ -22,16 +23,21 @@ def dict_of_tuple_dicts(word_list, markov_order = 2):
         queue.append(word)
         token = 1
       else:
+        print(f"queue: {queue}")
         queue.append(word)
+        print(f"queue append: {queue}")
         word_select = queue.pop(0)
+        print(f"queue pop: {queue}")
+        print(f"word_select: {word_select}")
         if indx == len(words) - 1:
-          print('end token')
           token = -1
         # print(len(queue))
+        print(word_select, tuple(queue), token)
         dict_of_tuple_entry(master_dict, word_select, tuple(queue), token)
+        # dict_of_tuple_entry(master_dict, word_select, queue, token)
         if token == 1: token = 0
         if indx == len(words) - 1:
-          print('break')
+          # print('break')
           break
 
   return master_dict
@@ -53,6 +59,7 @@ def dict_of_tuple_entry(master_dict, word_select, words, token):
     master_dict[word_select] = {}
     master_dict[word_select][words] = (1, token)
   # return master_dict
+
 def find_first_word(line_list):
   found_word = False
   while found_word == False:
@@ -117,19 +124,16 @@ def pickle_ds(corpus_file='./lyrics', filename = "masterdict.pkl"):
 
 if __name__ == '__main__':
   # if len(sys.argv) == 2:
-  #     # use corpus file as sys.argv if
+  # #     # use corpus file as sys.argv if
   #     word_list, master_dict = pickle_ds(sys.argv[1])
   # else:
   #     # testing purposes
-  # text = "one fish two fish red fish blue fish \n \
-  #         one fish two fish red fish blue fish \n \
-  #         one fish two fish red fish blue fish \n \
-  #         one fish two fish red fish blue fish \n \
-  #         one fish two fish red fish blue fish" 
   # word_list = text.splitlines()
   # master_dict = dict_of_tuple_dicts(word_list)
-  word_list, master_dict = pickle_ds()
-  # word_list, master_dict = pickle_ds(sys.argv[1])
+  # word_list, master_dict = pickle_ds()
+  word_list, master_dict = pickle_ds(sys.argv[1])
   # print(master_dict)
+  with open('file.txt', 'w') as file:
+     file.write(json.dumps(master_dict))
 
-  print(construct_phrase(word_list, master_dict))
+  # print(construct_phrase(word_list, master_dict))
